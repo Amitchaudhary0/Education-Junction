@@ -4,7 +4,7 @@
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -17,8 +17,16 @@ interface ImageFormProps {
     };
 }
 
+
+
+
 const ImageForm = ({ initialData }: ImageFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [previousUrl, setPreviousUrl] = useState<null |string>(null);
+
+    useEffect(()=>{
+        setPreviousUrl(initialData.imageUrl);
+    },[])
 
     const toggleEditing = () => {
         setIsEditing(!isEditing);
@@ -28,7 +36,11 @@ const ImageForm = ({ initialData }: ImageFormProps) => {
 
     const onSubmit = async (values: { imageUrl: string }) => {
         try {
-            await axios.patch(`/api/courses/${initialData.courseId}`, values);
+            await axios.patch(`/api/courses/${initialData.courseId}`, values); 
+            if(previousUrl!==null){
+                await axios.delete(`/api/courses/${initialData.courseId}/deleteUploadthing/${previousUrl?.split("/").at(-1)}`);
+            }    
+            setPreviousUrl(values.imageUrl);
             toast.success("Course updated");
             toggleEditing();
             route.refresh();

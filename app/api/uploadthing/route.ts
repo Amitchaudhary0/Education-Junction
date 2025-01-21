@@ -1,5 +1,5 @@
 import { createRouteHandler } from "uploadthing/next";
- 
+import { UTApi } from "uploadthing/server";
 import { ourFileRouter } from "./core";
  
 // Export routes for Next App Router
@@ -8,6 +8,8 @@ interface RouteHandlerConfig {
   onError: (error: Error) => void;
   // config?: { [key: string]: any };
 }
+
+export const utapi = new UTApi();
 
 export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,

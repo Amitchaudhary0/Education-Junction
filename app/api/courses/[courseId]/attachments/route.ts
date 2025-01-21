@@ -2,9 +2,12 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+
 type ParamsProps={
     params:Promise<{courseId:string}>,
 }
+
+
 
 export async function POST(req:Request,{params}:ParamsProps){
     try {
@@ -42,3 +45,4 @@ export async function POST(req:Request,{params}:ParamsProps){
         return new NextResponse("Internal Error",{status:500});
     }
 }
+
