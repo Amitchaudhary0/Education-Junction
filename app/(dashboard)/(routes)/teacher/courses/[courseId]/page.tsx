@@ -9,6 +9,7 @@ import ImageForm from "../_components/imageForm"
 import CategoryForm from "../_components/categoryForm"
 import PriceForm from "../_components/priceForm"
 import AttachmentsForm from "../_components/attachmentsForm"
+import ChaptersForm from "../_components/chaptersForm"
 
 type RouteContext = { params:Promise< { courseId: string } >};
 
@@ -23,9 +24,15 @@ const CourseId = async ({ params }:RouteContext) => {
 
     const course = await db.course.findUnique({
         where: {
-            id: courseId
+            id: courseId,
+            userId
         },
         include:{
+            chapters:{
+                orderBy:{
+                    position:"asc",
+                },
+            },
             attachments:{
                 orderBy:{
                     createdAt:"desc",
@@ -51,6 +58,7 @@ const CourseId = async ({ params }:RouteContext) => {
         course.price,
         course.imageUrl,
         course.categoryId,
+        course.chapters.some(chapter=>chapter.isPublished),
     ]
 
     const totalFields = requiredFields.length;
@@ -84,15 +92,13 @@ const CourseId = async ({ params }:RouteContext) => {
                         value: category.id,
                     }))} />
                 </div>
-                <div className="space-x-6">
-                     <div>
-                        <div className="flex items-center gap-x-2">
+                <div>
+                     <div >
+                        <div className="flex items-center gap-2">
                             <IconBadge icon={ListCheck}/>
                             <h2 className="text-xl">Course chapters</h2>
                         </div>
-                        <div className="">
-                            TODO: Chapters
-                        </div>
+                        <ChaptersForm initialData={{...course,courseId}} />
                      </div>
                      <div>
                      <div className="flex items-center gap-x-2 mt-6">
